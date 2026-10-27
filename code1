@@ -1,0 +1,31 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+    FILE* fp = fopen("gpa.csv", "w");
+    if (!fp) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+
+    int id;
+    float gpa;
+    char name[10];
+
+    while (fscanf(stdin, " %d %s %f", &id, name, &gpa) == 3) {
+        if (id == -1) break;
+        fprintf(fp, "%d,%s,%.2f\n", id, name, gpa);
+    }
+    fclose(fp);
+
+    fp = fopen("gpa.csv", "r");
+    while (fscanf(fp, " %d\%s\%f", &id, name, &gpa) == 3) {
+        if (id == -1) break;
+        fprintf(stdout, "%d,%s,%.2f\n", id, name, gpa);
+    }
+    fclose(fp);
+
+  
+    return 0;
+}
