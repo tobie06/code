@@ -1,31 +1,39 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
-int main(int argc, char* argv[])
-{
-    FILE* fp = fopen("gpa.csv", "w");
-    if (!fp) {
-        printf("Error opening file!\n");
-        return 1;
-    }
+int main(void) {
+	FILE* fp = fopen("input.txt", "r");
+	if (!fp) {
+		printf("open file error");
 
-    int id;
-    float gpa;
-    char name[10];
+		return 1;
+	}
+	int count;
+	int seat[10] = { 0 };
+	int success = 0;
 
-    while (fscanf(stdin, " %d %s %f", &id, name, &gpa) == 3) {
-        if (id == -1) break;
-        fprintf(fp, "%d,%s,%.2f\n", id, name, gpa);
-    }
-    fclose(fp);
+	if(fscanf(fp, "%d", &count) == 1)
+	{	
+		printf("전체 예약 시도:%d\n", count);
+	}
 
-    fp = fopen("gpa.csv", "r");
-    while (fscanf(fp, " %d\%s\%f", &id, name, &gpa) == 3) {
-        if (id == -1) break;
-        fprintf(stdout, "%d,%s,%.2f\n", id, name, gpa);
-    }
-    fclose(fp);
+	for (int i = 0; i < count; i++) {
+		int seat_no;
+		 if(fscanf(fp, "%d", &seat_no) == 1) {
+			printf("예약 시도중인 좌석 번호: %d\n", seat_no);
+		}
 
-  
-    return 0;
+		 if (seat[seat_no - 1] == 0) {
+			 seat[seat_no - 1] = 1;
+			 success++;
+		 }
+	}
+	printf("%d\n", success);
+
+	for (int i = 0; i < 10; i++) {
+		printf("%d ", seat[i]);
+	}
+	fclose(fp);
+	return 0;
+
 }
