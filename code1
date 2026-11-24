@@ -1,39 +1,144 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-int main(void) {
-	FILE* fp = fopen("input.txt", "r");
-	if (!fp) {
-		printf("open file error");
+#define INPUT stdin
+//#define INPUT fp
 
-		return 1;
-	}
-	int count;
-	int seat[10] = { 0 };
-	int success = 0;
+typedef struct Book {
+    int id;
+    char title[100];
+    char author[50];
+    int year;
+    int available;
+    struct Book* nextBook;
+} Book;
 
-	if(fscanf(fp, "%d", &count) == 1)
-	{	
-		printf("전체 예약 시도:%d\n", count);
-	}
+Book *creatBook() {
+    Book *book =malloc(sizeof(Book));
+    if (book == NULL) {
+        printf("메모리 할당 실패\n");
+        return NULL;
+    }
+    printf("도서 ID: ");
+    fscanf(INPUT, "%d", &(book->id));
+    printf("도서 제목: ");
+    fscanf(INPUT, "%s", book->title);
+    printf("저자: ");
+    fscanf(INPUT, "%s", book->author);
+    printf("도서 출반연도: ");
+    fscanf(INPUT, "%d", &(book->year));
+    return book;
 
-	for (int i = 0; i < count; i++) {
-		int seat_no;
-		 if(fscanf(fp, "%d", &seat_no) == 1) {
-			printf("예약 시도중인 좌석 번호: %d\n", seat_no);
-		}
+}
 
-		 if (seat[seat_no - 1] == 0) {
-			 seat[seat_no - 1] = 1;
-			 success++;
-		 }
-	}
-	printf("%d\n", success);
+void addBook(Book**head,Book* book) {
+    int new_id = book->id;
+    Book* current_book = *head;
+    while (current_book != NULL) {
+        if (current_book->id == new_id) {
+            printf("이미 존재하는 책입니다");
+            free(book);
+            return;
+        }
+        current_book = current_book->nextBook;
+    }
+    book->nextBook = *head;
+    *head = book;
+}
 
-	for (int i = 0; i < 10; i++) {
-		printf("%d ", seat[i]);
-	}
-	fclose(fp);
-	return 0;
+void deleteBook(Book** head) {
+    int id;
+    printf("삭제할 책의 ID: ");
+    fscanf(INPUT, "%d", &id);
 
+    Book* current_book = *head;
+
+    if (current_book->id == id) {
+        *head = current_book->nextBook;
+        free(current_book);
+        printf("맨 앞에 있는 책을 삭제했습니다");
+        return;
+    }
+    Book* prev_book = NULL;
+    while (current_book != NULL) {
+        if (current_book->id == id) {
+            prev_book->nextBook = current_book->nextBook;
+            free(current_book);
+            printf("삭제 완료되었습니다");
+            return;
+        }
+        prev_book = current_book;
+        current_book = current_book->nextBook;
+    }
+}
+
+
+
+void printBook(Book *book) {
+
+        printf("\n========== 도서 정보 ==========\n");
+        printf("도서 ID: %d\n", book->id);
+        printf("도서 제목: %s\n", book->title);
+        printf("저자: %s\n", book->author);
+        printf("출판연도: %d\n", book->year);
+}
+
+
+int main(void)
+{
+    Book*head = NULL;
+    int menu;
+    FILE* fp = fopen("input.txt", "r");
+
+    if (fp == NULL)
+    {
+        printf("Failed to open file\n");
+        return 1;
+    }
+    while (1)
+    {
+        printf("\n========== 도서 관리 시스템 ==========\n");
+        printf("1. 도서 등록\n");
+        printf("2. 도서 삭제\n");
+        printf("3. 전체 도서 조회\n");
+        printf("4. 도서 검색\n");
+        printf("5. 도서 정보 수정\n");
+        printf("6. 도서 대출\n");
+        printf("7. 도서 반납\n");
+        printf("0. 프로그램 종료\n");
+        printf("======================================\n");
+        printf("선택: ");
+
+        fscanf(INPUT, "%d", &menu);
+
+        switch (menu)
+        {
+        case 1:
+            printf("도서 등록을 선택하셨습니다\n");
+            Book *book = creatBook();
+            addBook(&head, book);
+            printBook(book);
+            break;
+        case 2:
+            printf("도서 삭제을 선택하셨습니다\n");
+            deleteBook(&head);
+            break;
+
+        case 3:
+            printf("전체 도서 조회을 선택하셨습니다\n");
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            printf("준비중입니다\n");
+            break;
+
+        default:
+            printf("잘못된 메뉴입니다\n");
+            break;
+        }
+    }
+
+    return 0;
 }
